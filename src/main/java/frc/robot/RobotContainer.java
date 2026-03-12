@@ -171,10 +171,10 @@ public class RobotContainer {
     button(XboxController.Button.kRightStick.value)
         .whileTrue(Commands.run(() -> driveSubsystem.setAllWheelAngles(0.0), driveSubsystem));
 
-    // Toggle B: press once to run shooter + tower + conveyor, press again to stop.
+    // Toggle B: press once to run shooter + tower + conveyor with velocity control, press again to stop.
     button(XboxController.Button.kB.value)
         .toggleOnTrue(Commands.startEnd(
-            () -> shooterSubsystem.setShooterPower(0.85),
+            () -> shooterSubsystem.shootWithPID(),
             () -> shooterSubsystem.stop(),
             shooterSubsystem));
 
