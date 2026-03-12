@@ -28,7 +28,7 @@ import static frc.robot.Constants.OperatorConstants.OPERATOR_CONTROLLER_PORT;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final LimelightSubsystem limelightSubsystem = new LimelightSubsystem();
-  private final DriveSubsystem driveSubsystem = new DriveSubsystem();
+  private final DriveSubsystem driveSubsystem = new DriveSubsystem(limelightSubsystem);
   // Shooter: Left CAN ID, Right CAN ID | Tower CAN ID | Conveyor CAN ID | Intake CAN ID
   private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(11, 9, 12, 13, 16);
 
