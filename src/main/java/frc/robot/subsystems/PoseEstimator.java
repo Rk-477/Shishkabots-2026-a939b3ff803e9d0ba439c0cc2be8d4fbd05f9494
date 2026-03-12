@@ -8,6 +8,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -16,16 +17,16 @@ public class PoseEstimator extends SubsystemBase {
    private SwerveDrivePoseEstimator m_swerveEstimator;
     private DriveSubsystem m_driveSubsystem;
     // Commented out Limelight subsystem as it's no longer used
-    // private LimelightSubsystem m_limelight;
+    private LimelightSubsystem m_limelight;
     private static final Vector<N3> stateStdDevs =
       VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
     private static final Vector<N3> visionMeasurementStdDevs =
       VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
   /** Creates a new PoseEstimator. */
   
-  public PoseEstimator(DriveSubsystem drive) {
+  public PoseEstimator(DriveSubsystem drive, LimelightSubsystem limelight) {
      m_driveSubsystem = drive;
-        // m_limelight = limelight; // Commented out as Limelight is no longer used
+        m_limelight = limelight; // Commented out as Limelight is no longer used
         m_swerveEstimator =
             new SwerveDrivePoseEstimator(
                 m_driveSubsystem.getDriveKinematics(), 
@@ -67,5 +68,13 @@ public class PoseEstimator extends SubsystemBase {
         m_swerveEstimator.addVisionMeasurement(visionMeasurement, resultTimestamp);
         }
         */
+        if (m_limelight.isTargetValid()) {
+            Pose3d botPose3d = m_limelight.getBotPose3d();
+            if (botPose3d != null) {
+                Pose2d visionPose = botPose3d.toPose2d();
+                double timestamp = m_limelight.getTimeRecordedInMilis() / 1000.0; 
+                m_swerveEstimator.addVisionMeasurement(visionPose, timestamp);
+            } 
+        }
   }
 }

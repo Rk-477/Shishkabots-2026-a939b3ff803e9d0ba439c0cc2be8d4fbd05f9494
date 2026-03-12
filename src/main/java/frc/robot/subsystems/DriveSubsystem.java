@@ -33,7 +33,7 @@ import frc.robot.Constants.DriveConstants;
 public class DriveSubsystem extends SubsystemBase {
   /** Creates a new DriveSubsystem. */
   // Commented out limelight camera as it's no longer used
-    // private LimelightSubsystem m_LimelightSubsystem;
+    private LimelightSubsystem m_LimelightSubsystem;
     // PoseEstimator for tracking robot pose
     private PoseEstimator m_PoseEstimator;
 
@@ -87,8 +87,9 @@ public class DriveSubsystem extends SubsystemBase {
     private DoubleLogEntry m_speedLog;
     private DoubleLogEntry m_headingLog;
 
-  public DriveSubsystem() {
-    m_PoseEstimator = new PoseEstimator(this);
+  public DriveSubsystem(LimelightSubsystem limelight) {
+    this.m_LimelightSubsystem = limelight;
+    m_PoseEstimator = new PoseEstimator(this, m_LimelightSubsystem);
         // Reset the gyro
         m_gyro.reset();
 
