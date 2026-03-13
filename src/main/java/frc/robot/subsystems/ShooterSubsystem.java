@@ -42,27 +42,17 @@ public class ShooterSubsystem extends SubsystemBase {
     private final SparkClosedLoopController towerClosedLoop;
 
 
-
-
-
-
-
-
-
-
-
-
     
     // Feed power into shooter wheels. Lower values reduce "pop-up" at entry and flatten flight path.
-    private static final double TOWER_POWER = 1;
+    private static final double TOWER_POWER = .9;
     private static final double CONVEYOR_POWER = 0.75;
 
     // PID constants for shooter velocity control - aggressive tuning for faster response
-    private static final double SHOOTER_P = 0.02;
+    private static final double SHOOTER_P = 0.01;
     private static final double SHOOTER_I = 0.0;
     private static final double SHOOTER_D = 0.0;
 
-      private static final double TOWER_P = 0.01;
+      private static final double TOWER_P = 0.1;
     private static final double TOWER_I = 0.0;
     private static final double TOWER_D = 0.0;
     
@@ -507,6 +497,7 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.log("Setting shooter velocity to " + scaledVelocityRPM + " RPM (scaled)");
         leftClosedLoop.setReference(scaledVelocityRPM, ControlType.kVelocity);
         rightClosedLoop.setReference(scaledVelocityRPM, ControlType.kVelocity);
+        towerClosedLoop.setReference(scaledVelocityRPM, ControlType.kVelocity);
         conveyorMotor.set(CONVEYOR_POWER);
     }
 
@@ -521,7 +512,8 @@ public class ShooterSubsystem extends SubsystemBase {
      * Run shooter at shooting speed using PID
      */
     public void shootWithPID() {
-        setShooterVelocity(SHOOTING_VELOCITY_RPM);
+        setShooterPower(.85);
+    
     }
 
     /**

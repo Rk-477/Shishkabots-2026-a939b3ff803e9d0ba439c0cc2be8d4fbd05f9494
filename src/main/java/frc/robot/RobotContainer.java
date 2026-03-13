@@ -16,6 +16,8 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj.XboxController;
+
+import static edu.wpi.first.units.Units.RPM;
 import static frc.robot.Constants.OperatorConstants.DRIVER_CONTROLLER_PORT;
 import static frc.robot.Constants.OperatorConstants.OPERATOR_CONTROLLER_PORT;
 
@@ -174,7 +176,7 @@ public class RobotContainer {
     // Toggle B: press once to run shooter + tower + conveyor with velocity control, press again to stop.
     button(XboxController.Button.kB.value)
         .toggleOnTrue(Commands.startEnd(
-            () -> shooterSubsystem.shootWithPID(),
+            () -> shooterSubsystem.setShooterPower(.85),
             () -> shooterSubsystem.stop(),
             shooterSubsystem));
 
