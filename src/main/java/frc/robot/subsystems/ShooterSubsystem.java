@@ -495,9 +495,9 @@ public class ShooterSubsystem extends SubsystemBase {
         double scaledVelocityRPM = velocityRPM * SHOOTER_OUTPUT_SCALE;
         targetVelocity = scaledVelocityRPM;
         Logger.log("Setting shooter velocity to " + scaledVelocityRPM + " RPM (scaled)");
-        leftClosedLoop.setReference(scaledVelocityRPM, ControlType.kVelocity);
-        rightClosedLoop.setReference(scaledVelocityRPM, ControlType.kVelocity);
-        towerClosedLoop.setReference(scaledVelocityRPM, ControlType.kVelocity);
+        leftClosedLoop.setSetpoint(scaledVelocityRPM, ControlType.kVelocity);
+        rightClosedLoop.setSetpoint(scaledVelocityRPM, ControlType.kVelocity);
+        towerClosedLoop.setSetpoint(scaledVelocityRPM, ControlType.kVelocity);
         conveyorMotor.set(CONVEYOR_POWER);
     }
 

@@ -198,7 +198,7 @@ public class RobotContainer {
     // Toggle B: press once to run shooter + tower + conveyor with velocity control, press again to stop.
     button(XboxController.Button.kB.value)
         .toggleOnTrue(Commands.startEnd(
-            () -> shooterSubsystem.setShooterPower(.85),
+            () -> shooterSubsystem.setShooterVelocity(5000), // Example velocity, adjust as needed
             () -> shooterSubsystem.stop(),
             shooterSubsystem));
 
