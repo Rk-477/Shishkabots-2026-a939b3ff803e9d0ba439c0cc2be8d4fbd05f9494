@@ -252,7 +252,7 @@ public class DriveSubsystem extends SubsystemBase {
      * Returns the gyro rotation as a Rotation2d object
      */
     public Rotation2d getGyroRotation() {
-        return Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble());
+        return Rotation2d.fromRadians(m_gyro.getYaw().getValueAsDouble());
     }
 
     /**

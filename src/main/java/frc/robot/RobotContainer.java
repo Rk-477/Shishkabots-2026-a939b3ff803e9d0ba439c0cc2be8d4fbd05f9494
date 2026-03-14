@@ -18,6 +18,8 @@ import frc.robot.subsystems.IntakePivotSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj.XboxController;
+
+import static edu.wpi.first.units.Units.RPM;
 import static frc.robot.Constants.OperatorConstants.DRIVER_CONTROLLER_PORT;
 import static frc.robot.Constants.OperatorConstants.OPERATOR_CONTROLLER_PORT;
 
@@ -193,10 +195,10 @@ public class RobotContainer {
     button(XboxController.Button.kRightStick.value)
         .whileTrue(Commands.run(() -> driveSubsystem.setAllWheelAngles(0.0), driveSubsystem));
 
-    // Toggle B: press once to run shooter + tower + conveyor, press again to stop.
+    // Toggle B: press once to run shooter + tower + conveyor with velocity control, press again to stop.
     button(XboxController.Button.kB.value)
         .toggleOnTrue(Commands.startEnd(
-            () -> shooterSubsystem.setShooterPower(0.85),
+            () -> shooterSubsystem.setShooterPower(.85),
             () -> shooterSubsystem.stop(),
             shooterSubsystem));
 
@@ -231,3 +233,4 @@ public class RobotContainer {
     return driveSubsystem;
   }
 }
+

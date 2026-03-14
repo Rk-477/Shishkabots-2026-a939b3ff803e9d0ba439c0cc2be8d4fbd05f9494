@@ -88,6 +88,20 @@ public class LimelightSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Limelight distance", getDistanceFromTag(1.6, -getX()));
         SmartDashboard.putNumber("Limelight Tag ID", getTargetID());
 
+        Pose3d botPose = getBotPose3d();
+        if (botPose != null) {
+            Rotation3d rotation = botPose.getRotation();
+            SmartDashboard.putBoolean("Limelight Botpose Valid", true);
+            SmartDashboard.putNumber("Limelight Roll", Math.toDegrees(rotation.getX()));
+            SmartDashboard.putNumber("Limelight Pitch", Math.toDegrees(rotation.getY()));
+            SmartDashboard.putNumber("Limelight Yaw", Math.toDegrees(rotation.getZ()));
+        } else {
+            SmartDashboard.putBoolean("Limelight Botpose Valid", false);
+            SmartDashboard.putNumber("Limelight Roll", Double.NaN);
+            SmartDashboard.putNumber("Limelight Pitch", Double.NaN);
+            SmartDashboard.putNumber("Limelight Yaw", Double.NaN);
+        }
+
         // Publish detected AprilTag pose to AdvantageScope for 3D field visualization
         if (isTargetValid()) {
             int tagId = getTargetID();
@@ -184,6 +198,25 @@ public class LimelightSubsystem extends SubsystemBase {
     public int getTargetID() {
         return (int) m_limelightTable.getEntry("tid").getDouble(0.0);
     }
+
+    /**
+     * Gets the field-layout height (Z) of a tag by ID.
+     * @param tagId AprilTag ID
+     * @return tag height in meters, or NaN if the ID does not exist in layout
+     */
+    public double getTagHeightMeters(int tagId) {
+        if (tagId <= 0) {
+            return Double.NaN;
+        }
+
+        Pose3d tagPose = aprilTagField.getTagPose(tagId).orElse(null);
+        if (tagPose == null) {
+            return Double.NaN;
+        }
+
+        return tagPose.getZ();
+    }
+
     public boolean isTargetValid() {
         return m_limelightTable.getEntry("tv").getDouble(0.0) == 1;
     }

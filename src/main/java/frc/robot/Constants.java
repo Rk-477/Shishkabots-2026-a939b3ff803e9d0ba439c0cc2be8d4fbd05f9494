@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.Units;
+import java.util.Map;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -30,6 +31,42 @@ public final class Constants {
     // Limelight publish to `updateData()` delay
     public static final double delayMillis = 10; // TODO: Make more accurate
   }
+
+  public static final class AutoAlignConstants {
+    private AutoAlignConstants() {}
+
+    public static final double DEFAULT_TARGET_DISTANCE_METERS = 2.0;
+    public static final double DEFAULT_TAG_HEIGHT_METERS = 1.12;
+    public static final double CAMERA_HEIGHT_METERS = 0.434;
+
+    // Per-tag target distance table for 2025 field tags (IDs 1-22).
+    // Tune these values per scoring strategy.
+    public static final Map<Integer, Double> TARGET_DISTANCE_METERS_BY_TAG = Map.ofEntries(
+        Map.entry(1, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(2, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(3, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(4, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(5, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(6, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(7, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(8, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(9, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(10, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(11, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(12, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(13, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(14, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(15, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(16, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(17, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(18, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(19, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(20, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(21, DEFAULT_TARGET_DISTANCE_METERS),
+        Map.entry(22, DEFAULT_TARGET_DISTANCE_METERS)
+    );
+  }
+
     public static final class Locations {
         // lets say that the distance from april tag is 0.5 m, kind of eyeballed some measurements on pathplanner, should test to make sure
         // correct

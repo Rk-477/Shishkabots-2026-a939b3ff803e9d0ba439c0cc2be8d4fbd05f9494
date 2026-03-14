@@ -39,34 +39,29 @@ public class ShooterSubsystem extends SubsystemBase {
     // Closed loop controllers for PID velocity control
     private final SparkClosedLoopController leftClosedLoop;
     private final SparkClosedLoopController rightClosedLoop;
-
-
-
-
-
-
-
-
-
-
+    private final SparkClosedLoopController towerClosedLoop;
 
 
     
     // Feed power into shooter wheels. Lower values reduce "pop-up" at entry and flatten flight path.
-    private static final double TOWER_POWER = 1;
+    private static final double TOWER_POWER = .9;
     private static final double CONVEYOR_POWER = 0.75;
 
     // PID constants for shooter velocity control - aggressive tuning for faster response
-    private static final double SHOOTER_P = 0.02;
+    private static final double SHOOTER_P = 0.01;
     private static final double SHOOTER_I = 0.0;
-    private static final double SHOOTER_D = 0.001;
+    private static final double SHOOTER_D = 0.0;
 
-      private static final double TOWER_P = 0.001;
+      private static final double TOWER_P = 0.1;
     private static final double TOWER_I = 0.0;
-    private static final double TOWER_D = 0.001;
+    private static final double TOWER_D = 0.0;
     
     private static final double SHOOTER_FF = 0.00019; // Feedforward for SparkMax built-in
+    private static final double TOWER_FF = .00019;
+    
     private static final double SHOOTER_OUTPUT_SCALE = 1.00; // Full output scaling for max speed
+    private static final double Tower_OUTPUT_SCALE = 1.00; // Full output scaling for max speed
+
 
     // WPILib SimpleMotorFeedforward for proper feedforward control
     // Aggressive tuning for faster spin-up and higher velocity
@@ -125,6 +120,7 @@ public class ShooterSubsystem extends SubsystemBase {
         // Get closed loop controllers for PID control
         leftClosedLoop = shooterMotorLeft.getClosedLoopController();
         rightClosedLoop = shooterMotorRight.getClosedLoopController();
+        towerClosedLoop = towerMotor.getClosedLoopController();
 
         // Configure shooter left motor with PID
         SparkMaxConfig shooterLeftConfig = new SparkMaxConfig();
@@ -172,7 +168,7 @@ public class ShooterSubsystem extends SubsystemBase {
             .smartCurrentLimit(TOWER_CURRENT_LIMIT);
             towerConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
             .pid(TOWER_P, TOWER_I, TOWER_D)
-            .velocityFF(SHOOTER_FF)
+            .velocityFF(TOWER_FF)
             .outputRange(-1, 1);
             
 
@@ -501,15 +497,23 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.log("Setting shooter velocity to " + scaledVelocityRPM + " RPM (scaled)");
         leftClosedLoop.setReference(scaledVelocityRPM, ControlType.kVelocity);
         rightClosedLoop.setReference(scaledVelocityRPM, ControlType.kVelocity);
-        towerMotor.set(TOWER_POWER);
+        towerClosedLoop.setReference(scaledVelocityRPM, ControlType.kVelocity);
         conveyorMotor.set(CONVEYOR_POWER);
+    }
+
+    public void setTowerVelocity (double velocityRPM) {
+        double scaledVelocityRPM = velocityRPM * Tower_OUTPUT_SCALE;
+        Logger.log("Setting tower velocity to " + scaledVelocityRPM + " RPM (scaled)");
+            towerMotor.set(TOWER_POWER);
+        towerClosedLoop.setReference(scaledVelocityRPM, ControlType.kVelocity);
     }
 
     /**
      * Run shooter at shooting speed using PID
      */
     public void shootWithPID() {
-        setShooterVelocity(SHOOTING_VELOCITY_RPM);
+        setShooterPower(.85);
+    
     }
 
     /**
