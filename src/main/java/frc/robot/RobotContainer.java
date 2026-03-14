@@ -5,7 +5,6 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -91,7 +90,7 @@ public class RobotContainer {
   }
 
   private double[] getTranslationInputs() {
-    XboxController controller = getActiveController();
+    XboxController controller = driveController;
     double rawForward = -controller.getLeftY();
     double rawStrafe = -controller.getLeftX();
 
@@ -110,13 +109,13 @@ public class RobotContainer {
   }
 
   private double getTranslationScale() {
-    return getActiveController().getRightBumperButton()
+    return driveController.getRightBumperButton()
         ? SPRINT_TRANSLATION_SCALE
         : NORMAL_TRANSLATION_SCALE;
   }
 
   private double getRotationScale() {
-    return getActiveController().getRightBumperButton() ? SPRINT_ROTATION_SCALE : NORMAL_ROTATION_SCALE;
+    return driveController.getRightBumperButton() ? SPRINT_ROTATION_SCALE : NORMAL_ROTATION_SCALE;
   }
 
   private double getForwardInput() {
@@ -128,23 +127,21 @@ public class RobotContainer {
   }
 
   private double getTurnInput() {
-    double rawTurn = -getActiveController().getRightX();
+    double rawTurn = -driveController.getRightX();
     double deadbanded = MathUtil.applyDeadband(rawTurn, DEADBAND);
     double cubic = deadbanded * deadbanded * deadbanded;
     return MathUtil.clamp(cubic * ROTATION_MULTIPLIER * getRotationScale(), -1.0, 1.0);
   }
 
-  private XboxController getActiveController() {
-    if (DriverStation.isJoystickConnected(DRIVER_CONTROLLER_PORT)) {
-      return driveController;
-    }
-    if (DriverStation.isJoystickConnected(OPERATOR_CONTROLLER_PORT)) {
-      return mechanismController;
-    }
-    return driveController;
+  private Trigger driverButton(int buttonId) {
+    return new Trigger(() -> driveController.getRawButton(buttonId));
   }
 
-  private Trigger button(int buttonId) {
+  private Trigger mechanismButton(int buttonId) {
+    return new Trigger(() -> mechanismController.getRawButton(buttonId));
+  }
+
+  private Trigger eitherButton(int buttonId) {
     return new Trigger(
         () -> driveController.getRawButton(buttonId) || mechanismController.getRawButton(buttonId));
   }
@@ -178,38 +175,38 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // Press A: start vision auto-alignment (no hold required).
-    button(XboxController.Button.kA.value)
+    // Controller 2 (mechanism): start vision auto-alignment.
+    mechanismButton(XboxController.Button.kA.value)
         .onTrue(new AutoAllign(limelightSubsystem, driveSubsystem));
 
-    // Start: zero gyro heading for drivebase.
-    button(XboxController.Button.kStart.value)
+    // Controller 1 (driver): zero gyro heading for drivebase.
+    driverButton(XboxController.Button.kStart.value)
         .onTrue(Commands.runOnce(driveSubsystem::zeroHeading, driveSubsystem));
 
-    // Y / Back: point all wheels forward for quick alignment reset.
-    button(XboxController.Button.kY.value)
+    // Controller 1 (driver): point all wheels forward for quick alignment reset.
+    driverButton(XboxController.Button.kY.value)
         .onTrue(Commands.runOnce(() -> driveSubsystem.setAllWheelAngles(0.0), driveSubsystem));
-    button(XboxController.Button.kBack.value)
+    driverButton(XboxController.Button.kBack.value)
         .onTrue(Commands.runOnce(() -> driveSubsystem.setAllWheelAngles(0.0), driveSubsystem));
-    // Right stick click: hold modules at initial straight position.
-    button(XboxController.Button.kRightStick.value)
+    // Controller 1 (driver): hold modules at initial straight position.
+    driverButton(XboxController.Button.kRightStick.value)
         .whileTrue(Commands.run(() -> driveSubsystem.setAllWheelAngles(0.0), driveSubsystem));
 
-    // Toggle B: press once to run shooter + tower + conveyor with velocity control, press again to stop.
-    button(XboxController.Button.kB.value)
+    // Controller 2 (mechanism): toggle shooter + tower + conveyor.
+    mechanismButton(XboxController.Button.kB.value)
         .toggleOnTrue(Commands.startEnd(
             () -> shooterSubsystem.setShooterVelocity(5000), // Example velocity, adjust as needed
             () -> shooterSubsystem.stop(),
             shooterSubsystem));
 
-    // Press X to toggle intake motor (CAN 16) at 0.6 power.
-    button(XboxController.Button.kX.value)
+    // Intake is allowed from both controllers.
+    eitherButton(XboxController.Button.kX.value)
         .onTrue(Commands.runOnce(
             () -> shooterSubsystem.toggleIntakeOnly(0.6),
             shooterSubsystem));
 
-    // Press left bumper to toggle the intake pivot between its two absolute positions.
-    button(XboxController.Button.kLeftBumper.value)
+    // Controller 2 (mechanism): toggle intake pivot between absolute positions.
+    mechanismButton(XboxController.Button.kLeftBumper.value)
         .onTrue(Commands.runOnce(
             () -> {
               SmartDashboard.putBoolean("IntakePivot/LeftBumperPressed", true);
@@ -233,4 +230,3 @@ public class RobotContainer {
     return driveSubsystem;
   }
 }
-
